@@ -1,0 +1,574 @@
+﻿<Window x:Class="WpfApp.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:wv2="clr-namespace:Microsoft.Web.WebView2.Wpf;assembly=Microsoft.Web.WebView2.Wpf"
+        mc:Ignorable="d"
+        Title="Dev_monitoring" Height="950" Width="1600"
+        WindowStartupLocation="CenterScreen"
+        WindowStyle="None" ResizeMode="CanResize"
+        AllowsTransparency="True"
+        Background="#020202" Foreground="#E0E0E0"
+        FontFamily="Consolas"
+        MouseDown="Window_MouseDown" Loaded="Window_Loaded">
+
+    <Window.Resources>
+        <SolidColorBrush x:Key="NeonGreen" Color="#00FF41"/>
+        <SolidColorBrush x:Key="NeonBlue" Color="#00D4FF"/>
+        <SolidColorBrush x:Key="NeonRed" Color="#FF3333"/>
+        <SolidColorBrush x:Key="NeonYellow" Color="#FFFF00"/>
+        <SolidColorBrush x:Key="NeonPurple" Color="#B026FF"/>
+        <SolidColorBrush x:Key="PanelBack" Color="#0A0A0A"/>
+        <SolidColorBrush x:Key="ChatBubbleSend" Color="#005C4B"/>
+        <SolidColorBrush x:Key="ChatBubbleRecv" Color="#202C33"/>
+
+        <Style x:Key="MenuBtn" TargetType="Button">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Foreground" Value="#888"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="HorizontalContentAlignment" Value="Left"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Padding" Value="20,15"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="border" Background="{TemplateBinding Background}" Padding="{TemplateBinding Padding}">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="30"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Text="➤" Foreground="{TemplateBinding Foreground}" VerticalAlignment="Center"/>
+                                <ContentPresenter Grid.Column="1" VerticalAlignment="Center"/>
+                            </Grid>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="border" Property="Background" Value="#151515"/>
+                                <Setter Property="Foreground" Value="{StaticResource NeonBlue}"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="InfoCard" TargetType="Border">
+            <Setter Property="Background" Value="#080808"/>
+            <Setter Property="BorderBrush" Value="#333"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="CornerRadius" Value="3"/>
+            <Setter Property="Padding" Value="15"/>
+            <Setter Property="Margin" Value="5"/>
+        </Style>
+
+        <Style x:Key="CyberInput" TargetType="TextBox">
+            <Setter Property="Background" Value="#111"/>
+            <Setter Property="Foreground" Value="{StaticResource NeonGreen}"/>
+            <Setter Property="BorderBrush" Value="#444"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Padding" Value="8"/>
+            <Setter Property="FontFamily" Value="Consolas"/>
+            <Setter Property="CaretBrush" Value="{StaticResource NeonGreen}"/>
+        </Style>
+    </Window.Resources>
+
+    <Border BorderBrush="#222" BorderThickness="1">
+        <Grid>
+            <Grid x:Name="MainAppGrid" Visibility="Collapsed">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="280"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <Canvas Grid.Column="0" Grid.ColumnSpan="2" Panel.ZIndex="999" IsHitTestVisible="False">
+                    <Border x:Name="SantaElement" Width="100" Height="100" Canvas.Left="-100" Canvas.Top="-100">
+                        <TextBlock Text="🎅" FontSize="60" HorizontalAlignment="Center" VerticalAlignment="Center">
+                            <TextBlock.Effect>
+                                <DropShadowEffect Color="White" BlurRadius="15" ShadowDepth="0"/>
+                            </TextBlock.Effect>
+                        </TextBlock>
+                    </Border>
+                </Canvas>
+
+                <Border Grid.Column="0" Background="{StaticResource PanelBack}" BorderBrush="#222" BorderThickness="0,0,1,0">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+
+                        <StackPanel Grid.Row="0" Margin="20,30,20,20">
+                            <TextBlock Text="CYBER_MONITOR" Foreground="White" FontSize="22" FontWeight="Bold"/>
+                            <TextBlock Text="SYSTEM v14.0_ROOT" Foreground="Gray" FontSize="10" Margin="2,0,0,0"/>
+                            <Separator Background="#333" Margin="0,15"/>
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock x:Name="TxtRole" Text="[ADMIN]" Foreground="{StaticResource NeonRed}" FontSize="12" FontWeight="Bold"/>
+                                <TextBlock x:Name="TxtUsername" Text=" root" Foreground="#AAA" FontSize="12"/>
+                            </StackPanel>
+                        </StackPanel>
+
+                        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Hidden">
+                            <StackPanel>
+                                <Button Content="DASHBOARD" Tag="Home" Style="{StaticResource MenuBtn}" Click="MenuButton_Click"/>
+                                <Button Content="МАПА (LIVE MAP)" Tag="Map" Style="{StaticResource MenuBtn}" Click="MenuButton_Click"/>
+                                <Button Content="OSINT (ПОШУК)" Tag="Location" Style="{StaticResource MenuBtn}" Click="MenuButton_Click"/>
+                                <Button Content="ЧАТ (SECURE CHAT)" Tag="Chat" Style="{StaticResource MenuBtn}" Click="MenuButton_Click"/>
+                                <Button Content="ПЛЕЄР (MEDIA)" Tag="Music" Style="{StaticResource MenuBtn}" Click="MenuButton_Click"/>
+                                <Button Content="AI (NEURAL NET)" Tag="Ai" Style="{StaticResource MenuBtn}" Click="MenuButton_Click"/>
+                                <Button Content="ТЕРМІНАЛ (CMD)" Tag="Terminal" Style="{StaticResource MenuBtn}" Click="MenuButton_Click"/>
+                                <Button Content="НОТАТКИ (DB)" Tag="Notes" Style="{StaticResource MenuBtn}" Click="MenuButton_Click"/>
+                                <Button Content="БЕЗПЕКА (FIREWALL)" Tag="Firewall" Style="{StaticResource MenuBtn}" Click="MenuButton_Click"/>
+                                <Separator Background="#222" Margin="10"/>
+                                <Button Content="МІЙ ПРОФІЛЬ" Tag="Profile" Style="{StaticResource MenuBtn}" Click="MenuButton_Click"/>
+                            </StackPanel>
+                        </ScrollViewer>
+
+                        <StackPanel Grid.Row="2">
+                            <Button Content="⛔ ВИХІД ІЗ СИСТЕМИ" Background="Transparent" Foreground="#FF4444" BorderThickness="0" Padding="15" Click="Logout_Click" Cursor="Hand"/>
+                        </StackPanel>
+                    </Grid>
+                </Border>
+
+                <Grid Grid.Column="1" Background="#020202">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="40"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+
+                    <Grid Grid.Row="0" Background="{StaticResource PanelBack}" MouseDown="TopBar_MouseDown">
+                        <TextBlock x:Name="PageTitle" Text="DASHBOARD OVERVIEW" Foreground="#555" VerticalAlignment="Center" Margin="20,0" FontFamily="Consolas"/>
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                            <Button Content="_" Width="45" Background="Transparent" Foreground="White" BorderThickness="0" Click="Minimize_Click"/>
+                            <Button Content="▢" Width="45" Background="Transparent" Foreground="White" BorderThickness="0" Click="Maximize_Click"/>
+                            <Button Content="✕" Width="45" Background="#880000" Foreground="White" BorderThickness="0" Click="Close_Click"/>
+                        </StackPanel>
+                    </Grid>
+
+                    <Grid Grid.Row="1" Margin="10">
+
+                        <ScrollViewer x:Name="HomeView" VerticalScrollBarVisibility="Auto">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="1.5*"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="*"/>
+                                </Grid.RowDefinitions>
+
+                                <StackPanel Grid.Column="0" Grid.RowSpan="2">
+                                    <Border Style="{StaticResource InfoCard}">
+                                        <Grid>
+                                            <StackPanel>
+                                                <TextBlock x:Name="TxtTime" Text="00:00:00" Foreground="White" FontSize="40" FontWeight="Bold"/>
+                                                <TextBlock x:Name="TxtDate" Text="Loading..." Foreground="Gray"/>
+                                            </StackPanel>
+                                            <StackPanel HorizontalAlignment="Right">
+                                                <TextBlock Text="КРЕМЕНЧУК" Foreground="{StaticResource NeonBlue}" FontSize="16" HorizontalAlignment="Right"/>
+                                                <TextBlock x:Name="TxtTemp" Text="--°C" Foreground="White" FontSize="24" HorizontalAlignment="Right" FontWeight="Bold"/>
+                                                <TextBlock x:Name="TxtCondition" Text="Sky" Foreground="Gray" HorizontalAlignment="Right" FontSize="10"/>
+                                                <TextBlock x:Name="TxtHumidity" Text="Hum: --%" Foreground="Gray" HorizontalAlignment="Right" FontSize="10"/>
+                                            </StackPanel>
+                                        </Grid>
+                                    </Border>
+
+                                    <Border Style="{StaticResource InfoCard}" BorderBrush="{StaticResource NeonBlue}">
+                                        <StackPanel>
+                                            <Grid>
+                                                <TextBlock Text="VPN TUNNEL" Foreground="{StaticResource NeonBlue}" FontWeight="Bold"/>
+                                                <TextBlock x:Name="TxtVpnStatus" Text="DISCONNECTED" Foreground="Gray" HorizontalAlignment="Right"/>
+                                            </Grid>
+
+                                            <Grid Margin="0,15">
+                                                <TextBlock Text="🌍" FontSize="40" HorizontalAlignment="Center"/>
+                                                <Path x:Name="VpnLine" Data="M 0,20 L 200,20" Stroke="Gray" StrokeThickness="2" StrokeDashArray="2 2" VerticalAlignment="Center" HorizontalAlignment="Center" Width="200"/>
+                                            </Grid>
+
+                                            <Grid>
+                                                <TextBlock x:Name="TxtRealIp" Text="Real IP: ..." Foreground="#555" VerticalAlignment="Center"/>
+                                                <Button x:Name="BtnVpnToggle" Content="CONNECT" Background="#222" Foreground="White" HorizontalAlignment="Right" Padding="15,5" Click="VpnToggle_Click"/>
+                                            </Grid>
+                                        </StackPanel>
+                                    </Border>
+
+                                    <Border Style="{StaticResource InfoCard}" Height="300">
+                                        <Grid>
+                                            <Grid.RowDefinitions>
+                                                <RowDefinition Height="Auto"/>
+                                                <RowDefinition Height="*"/>
+                                            </Grid.RowDefinitions>
+                                            <TextBlock Text="KERNEL SYSTEM LOG" Foreground="{StaticResource NeonGreen}"/>
+                                            <ListBox x:Name="SystemLogList" Grid.Row="1" Background="Black" BorderThickness="0" Foreground="#00AA00" FontFamily="Consolas" FontSize="10" Margin="0,5,0,0"/>
+                                        </Grid>
+                                    </Border>
+                                </StackPanel>
+
+                                <StackPanel Grid.Column="1" Grid.RowSpan="2">
+                                    <Border Style="{StaticResource InfoCard}">
+                                        <StackPanel>
+                                            <TextBlock Text="RESOURCES" Foreground="{StaticResource NeonBlue}" FontWeight="Bold"/>
+                                            <TextBlock Text="CPU" Foreground="Gray" Margin="0,5,0,0"/>
+                                            <ProgressBar x:Name="PbCpu" Height="4" Background="#222" Foreground="{StaticResource NeonBlue}" BorderThickness="0"/>
+                                            <TextBlock Text="RAM" Foreground="Gray" Margin="0,5,0,0"/>
+                                            <ProgressBar x:Name="PbRam" Height="4" Background="#222" Foreground="{StaticResource NeonRed}" BorderThickness="0"/>
+                                            <TextBlock Text="DISK" Foreground="Gray" Margin="0,5,0,0"/>
+                                            <ProgressBar x:Name="PbDisk" Height="4" Background="#222" Foreground="{StaticResource NeonGreen}" BorderThickness="0"/>
+                                            <TextBlock x:Name="TxtDiskDetail" Text="Free: -- GB" Foreground="#555" FontSize="10" HorizontalAlignment="Right"/>
+                                        </StackPanel>
+                                    </Border>
+
+                                    <Border Style="{StaticResource InfoCard}" Height="250">
+                                        <Grid>
+                                            <TextBlock Text="TRAFFIC" Foreground="{StaticResource NeonGreen}" VerticalAlignment="Top"/>
+                                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Top">
+                                                <TextBlock x:Name="TxtDownload" Text="⬇ 0" Foreground="White" Margin="0,0,10,0"/>
+                                                <TextBlock x:Name="TxtUpload" Text="⬆ 0" Foreground="White"/>
+                                            </StackPanel>
+                                            <Canvas VerticalAlignment="Bottom" Height="200" ClipToBounds="True">
+                                                <Polygon x:Name="TrafficGraph" Fill="#3300FF41" Stroke="{StaticResource NeonGreen}" StrokeThickness="1"/>
+                                            </Canvas>
+                                        </Grid>
+                                    </Border>
+
+                                    <Border Style="{StaticResource InfoCard}">
+                                        <StackPanel>
+                                            <TextBlock Text="TOP PROCESSES" Foreground="{StaticResource NeonYellow}"/>
+                                            <TextBlock x:Name="TxtTopProc1" Text="..." Foreground="Gray" FontSize="10" Margin="0,5,0,0"/>
+                                            <TextBlock x:Name="TxtTopProc2" Text="..." Foreground="Gray" FontSize="10"/>
+                                            <TextBlock x:Name="TxtTopProc3" Text="..." Foreground="Gray" FontSize="10"/>
+                                            <TextBlock x:Name="TxtTopProc4" Text="..." Foreground="Gray" FontSize="10"/>
+                                            <TextBlock x:Name="TxtTopProc5" Text="..." Foreground="Gray" FontSize="10"/>
+                                        </StackPanel>
+                                    </Border>
+                                </StackPanel>
+
+                                <StackPanel Grid.Column="2" Grid.RowSpan="2">
+                                    <Border Style="{StaticResource InfoCard}" Height="400">
+                                        <Grid>
+                                            <Grid.RowDefinitions>
+                                                <RowDefinition Height="Auto"/>
+                                                <RowDefinition Height="*"/>
+                                            </Grid.RowDefinitions>
+                                            <TextBlock Text="ACTIVE CONNECTIONS" Foreground="{StaticResource NeonRed}"/>
+                                            <ListBox x:Name="ListConnections" Grid.Row="1" Background="Transparent" BorderThickness="0" Foreground="#888" FontFamily="Consolas" FontSize="10" Margin="0,10,0,0"/>
+                                        </Grid>
+                                    </Border>
+
+                                    <Border Style="{StaticResource InfoCard}">
+                                        <StackPanel>
+                                            <TextBlock Text="SECURITY MODULE" Foreground="White"/>
+                                            <TextBlock Text="VPN: ENCRYPTED" Foreground="{StaticResource NeonGreen}" Margin="0,5"/>
+                                            <TextBlock Text="TOR: DISABLED" Foreground="Gray" Margin="0,0"/>
+                                            <TextBlock Text="PROXY: 127.0.0.1:8080" Foreground="Gray" Margin="0,5"/>
+                                        </StackPanel>
+                                    </Border>
+                                </StackPanel>
+                            </Grid>
+                        </ScrollViewer>
+
+                        <Grid x:Name="LocationView" Visibility="Collapsed">
+                            <Border Style="{StaticResource InfoCard}" HorizontalAlignment="Center" VerticalAlignment="Center" Width="600" BorderBrush="{StaticResource NeonBlue}">
+                                <StackPanel>
+                                    <TextBlock Text="OSINT: PHOTO GEO-ANALYSIS" Foreground="{StaticResource NeonBlue}" FontSize="20" HorizontalAlignment="Center" Margin="0,0,0,20"/>
+
+                                    <Border Height="250" Background="#111" BorderBrush="#333" BorderThickness="1" Margin="0,0,0,20" x:Name="PhotoPlaceholder">
+                                        <Grid>
+                                            <Image x:Name="ImgOsintPreview" Stretch="Uniform"/>
+                                            <TextBlock x:Name="TxtOsintHint" Text="DRAG PHOTO HERE OR CLICK UPLOAD" Foreground="#444" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                        </Grid>
+                                    </Border>
+
+                                    <Button Content="📂 UPLOAD PHOTO" Background="#222" Foreground="White" Padding="10" Click="OsintUpload_Click"/>
+
+                                    <StackPanel x:Name="OsintResultPanel" Visibility="Collapsed" Margin="0,20,0,0">
+                                        <ProgressBar x:Name="OsintProgress" Height="2" IsIndeterminate="True" Foreground="{StaticResource NeonGreen}" Background="#222" BorderThickness="0"/>
+                                        <TextBlock x:Name="TxtOsintStatus" Text="ANALYZING METADATA..." Foreground="{StaticResource NeonGreen}" HorizontalAlignment="Center" Margin="0,5"/>
+
+                                        <Grid Margin="0,15,0,0">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="*"/>
+                                            </Grid.ColumnDefinitions>
+                                            <StackPanel>
+                                                <TextBlock Text="LATITUDE" Foreground="Gray"/>
+                                                <TextBlock x:Name="TxtLat" Text="--" Foreground="White" FontSize="16"/>
+                                            </StackPanel>
+                                            <StackPanel Grid.Column="1">
+                                                <TextBlock Text="LONGITUDE" Foreground="Gray"/>
+                                                <TextBlock x:Name="TxtLon" Text="--" Foreground="White" FontSize="16"/>
+                                            </StackPanel>
+                                        </Grid>
+                                        <TextBlock x:Name="TxtCity" Text="LOCATION: UNKNOWN" Foreground="{StaticResource NeonYellow}" HorizontalAlignment="Center" FontSize="18" Margin="0,15,0,0" FontWeight="Bold"/>
+                                    </StackPanel>
+                                </StackPanel>
+                            </Border>
+                        </Grid>
+
+                        <Grid x:Name="ProfileView" Visibility="Collapsed">
+                            <Border Style="{StaticResource InfoCard}" HorizontalAlignment="Center" VerticalAlignment="Center" Width="500">
+                                <StackPanel>
+                                    <TextBlock Text="USER PROFILE" Foreground="White" FontSize="20" FontWeight="Bold" Margin="0,0,0,20"/>
+
+                                    <Grid Margin="0,0,0,20">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="100"/>
+                                            <ColumnDefinition Width="*"/>
+                                        </Grid.ColumnDefinitions>
+                                        <Border Width="80" Height="80" CornerRadius="40" BorderBrush="{StaticResource NeonGreen}" BorderThickness="2">
+                                            <Border.Background>
+                                                <ImageBrush x:Name="ImgProfileBig" Stretch="UniformToFill"/>
+                                            </Border.Background>
+                                        </Border>
+                                        <Button Grid.Column="1" Content="UPLOAD NEW AVATAR" Background="#222" Foreground="White" Height="40" Click="UploadAvatar_Click"/>
+                                    </Grid>
+
+                                    <TextBlock Text="USERNAME (READ ONLY)" Foreground="Gray"/>
+                                    <TextBox x:Name="TxtProfileUser" Style="{StaticResource CyberInput}" IsReadOnly="True" Background="#050505"/>
+
+                                    <TextBlock Text="NEW PASSWORD" Foreground="Gray" Margin="0,15,0,0"/>
+                                    <TextBox x:Name="TxtProfilePass" Style="{StaticResource CyberInput}"/>
+
+                                    <TextBlock Text="AVATAR EMOJI" Foreground="Gray" Margin="0,15,0,0"/>
+                                    <TextBox x:Name="TxtProfileAvatar" Style="{StaticResource CyberInput}" MaxLength="2"/>
+
+                                    <Button Content="SAVE CHANGES" Background="{StaticResource NeonGreen}" Foreground="Black" FontWeight="Bold" Padding="15" Margin="0,30,0,0" Click="SaveProfile_Click"/>
+                                </StackPanel>
+                            </Border>
+                        </Grid>
+
+                        <Grid x:Name="ChatView" Visibility="Collapsed">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="300"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+
+                            <Border Grid.Column="0" Background="#111" BorderBrush="#222" BorderThickness="0,0,1,0">
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="60"/>
+                                        <RowDefinition Height="*"/>
+                                    </Grid.RowDefinitions>
+                                    <TextBox x:Name="TxtSearchChat" Grid.Row="0" Margin="10" Style="{StaticResource CyberInput}" Text="Search..." TextChanged="SearchChat_TextChanged"/>
+                                    <ListBox x:Name="ChatsList" Grid.Row="1" Background="Transparent" BorderThickness="0" SelectionChanged="ChatsList_SelectionChanged">
+                                        <ListBox.ItemTemplate>
+                                            <DataTemplate>
+                                                <Grid Margin="5" Width="260" Cursor="Hand">
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition Width="50"/>
+                                                        <ColumnDefinition Width="*"/>
+                                                    </Grid.ColumnDefinitions>
+                                                    <Ellipse Width="40" Height="40" Fill="#222"/>
+                                                    <TextBlock Text="{Binding AvatarPath}" Foreground="White" FontSize="10" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                    <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="10,0,0,0">
+                                                        <TextBlock Text="{Binding Username}" Foreground="White" FontWeight="Bold"/>
+                                                        <TextBlock Text="{Binding Status}" Foreground="{StaticResource NeonGreen}" FontSize="11"/>
+                                                    </StackPanel>
+                                                </Grid>
+                                            </DataTemplate>
+                                        </ListBox.ItemTemplate>
+                                    </ListBox>
+                                </Grid>
+                            </Border>
+
+                            <Grid Grid.Column="1" Background="#080808">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="50"/>
+                                    <RowDefinition Height="*"/>
+                                    <RowDefinition Height="70"/>
+                                </Grid.RowDefinitions>
+
+                                <Border Grid.Row="0" Background="#111" Padding="20,0">
+                                    <TextBlock x:Name="TxtChatHeader" Text="Select User" Foreground="White" VerticalAlignment="Center" FontWeight="Bold" FontSize="16"/>
+                                </Border>
+
+                                <ScrollViewer x:Name="ChatScrollViewer" Grid.Row="1" Padding="20">
+                                    <StackPanel x:Name="MessagePanel"/>
+                                </ScrollViewer>
+
+                                <Border Grid.Row="2" Background="#111" Padding="15">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
+                                        <Button Grid.Column="0" Content="📎" Style="{StaticResource MenuBtn}" Padding="15,0" Click="ChatAttach_Click"/>
+                                        <TextBox x:Name="TxtChatInput" Grid.Column="1" Style="{StaticResource CyberInput}" Margin="10,0" VerticalContentAlignment="Center" KeyDown="ChatInput_KeyDown"/>
+                                        <Button Grid.Column="2" Content="➤" Background="{StaticResource NeonBlue}" Foreground="Black" FontWeight="Bold" Width="60" Click="SendChat_Click"/>
+                                    </Grid>
+                                </Border>
+                            </Grid>
+                        </Grid>
+
+                        <Grid x:Name="MusicView" Visibility="Collapsed">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="300"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <Border Grid.Column="0" Background="#111" BorderBrush="#333" BorderThickness="0,0,1,0">
+                                <StackPanel>
+                                    <TextBlock Text="SERVER PLAYLIST" Foreground="{StaticResource NeonPurple}" Margin="15" FontWeight="Bold"/>
+                                    <Button x:Name="BtnAddMusic" Content="+ ADD FILE (ADMIN)" Background="#222" Foreground="White" Margin="10" Click="MusicOpen_Click"/>
+                                    <ListBox x:Name="MusicList" Background="Transparent" BorderThickness="0" Height="600" Foreground="#AAA" SelectionChanged="MusicList_SelectionChanged"/>
+                                </StackPanel>
+                            </Border>
+                            <Grid Grid.Column="1">
+                                <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+                                    <Border Width="300" Height="300" Background="#151515" CornerRadius="10" Margin="0,0,0,30">
+                                        <Grid>
+                                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="0,0,0,20">
+                                                <Rectangle Width="20" Height="50" Fill="{StaticResource NeonBlue}" Margin="2" x:Name="Bar1"/>
+                                                <Rectangle Width="20" Height="80" Fill="{StaticResource NeonPurple}" Margin="2" x:Name="Bar2"/>
+                                                <Rectangle Width="20" Height="120" Fill="{StaticResource NeonGreen}" Margin="2" x:Name="Bar3"/>
+                                                <Rectangle Width="20" Height="60" Fill="{StaticResource NeonYellow}" Margin="2" x:Name="Bar4"/>
+                                                <Rectangle Width="20" Height="90" Fill="{StaticResource NeonRed}" Margin="2" x:Name="Bar5"/>
+                                            </StackPanel>
+                                            <TextBlock Text="🎵" FontSize="120" Foreground="#333" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                        </Grid>
+                                    </Border>
+                                    <TextBlock x:Name="TxtSongName" Text="No Track" Foreground="White" FontSize="28" HorizontalAlignment="Center" FontWeight="Bold"/>
+                                    <TextBlock x:Name="TxtSongStatus" Text="Stopped" Foreground="Gray" HorizontalAlignment="Center" Margin="0,5,0,20"/>
+                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,20">
+                                        <Button Content="⏮" Width="60" Height="60" Background="Transparent" Foreground="White" FontSize="24" Click="MusicPrev_Click"/>
+                                        <Button x:Name="BtnPlayPause" Content="▶" Width="90" Height="90" Background="{StaticResource NeonBlue}" Foreground="Black" FontSize="40" Click="MusicPlay_Click" Margin="20,0" Style="{StaticResource MenuBtn}"/>
+                                        <Button Content="⏭" Width="60" Height="60" Background="Transparent" Foreground="White" FontSize="24" Click="MusicNext_Click"/>
+                                    </StackPanel>
+                                    <MediaElement x:Name="MusicPlayer" LoadedBehavior="Manual" UnloadedBehavior="Manual" Visibility="Collapsed" MediaEnded="MusicPlayer_MediaEnded"/>
+                                </StackPanel>
+                            </Grid>
+                        </Grid>
+
+                        <Grid x:Name="AiView" Visibility="Collapsed">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="250"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <Border Grid.Column="0" Background="#111" BorderBrush="#333" BorderThickness="0,0,1,0">
+                                <StackPanel Margin="10">
+                                    <TextBlock Text="AI MODEL:" Foreground="{StaticResource NeonBlue}" Margin="0,0,0,15" FontWeight="Bold"/>
+                                    <RadioButton x:Name="RbGemini" Content="Gemini" Foreground="White" Margin="0,5" IsChecked="True" GroupName="AI"/>
+                                    <RadioButton Content="GPT-4" Foreground="White" Margin="0,5" GroupName="AI"/>
+                                    <RadioButton Content="Claude 3" Foreground="White" Margin="0,5" GroupName="AI"/>
+                                    <RadioButton Content="DeepSeek" Foreground="White" Margin="0,5" GroupName="AI"/>
+                                    <Separator Background="#333" Margin="0,20"/>
+                                    <Button Content="🎤 VOICE" Background="#333" Foreground="White" Margin="0,10" Padding="10" Click="VoiceStart_Click"/>
+                                </StackPanel>
+                            </Border>
+                            <Grid Grid.Column="1">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="*"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+                                <TextBox x:Name="TxtAiLog" Background="#050505" Foreground="#CCC" BorderThickness="0" IsReadOnly="True" Padding="20" TextWrapping="Wrap" FontFamily="Consolas" FontSize="14"/>
+                                <Border Grid.Row="1" Background="#111" Padding="15">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
+                                        <Button x:Name="AiFileBtn" Content="📂" Background="Transparent" Foreground="Gray" Width="40" BorderThickness="0" Click="AiAttach_Click"/>
+                                        <TextBox Grid.Column="1" x:Name="TxtAiInput" Style="{StaticResource CyberInput}" Height="40" KeyDown="AiInput_KeyDown"/>
+                                        <Button Grid.Column="2" Content="SEND" Background="{StaticResource NeonPurple}" Foreground="White" Width="100" Margin="15,0,0,0" Click="AiSend_Click"/>
+                                    </Grid>
+                                </Border>
+                            </Grid>
+                        </Grid>
+
+                        <Grid x:Name="MapView" Visibility="Collapsed">
+                            <wv2:WebView2 x:Name="MapBrowser"/>
+                        </Grid>
+
+                        <Grid x:Name="TerminalView" Visibility="Collapsed">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="*"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+                            <TextBox x:Name="TxtTermOut" Background="Black" Foreground="#CCC" FontFamily="Consolas" FontSize="14" BorderThickness="0" IsReadOnly="True" VerticalScrollBarVisibility="Auto" Padding="10"/>
+                            <Border Grid.Row="1" Background="#111" Padding="5">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Text="root@server:~# " Foreground="{StaticResource NeonGreen}" VerticalAlignment="Center" Margin="5,0" FontFamily="Consolas" FontWeight="Bold"/>
+                                    <TextBox Grid.Column="1" x:Name="TxtTermIn" Style="{StaticResource CyberInput}" BorderThickness="0" KeyDown="Terminal_KeyDown"/>
+                                </Grid>
+                            </Border>
+                        </Grid>
+
+                        <Grid x:Name="NotesView" Visibility="Collapsed">
+                            <Border Margin="10" Style="{StaticResource InfoCard}">
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="*"/>
+                                    </Grid.RowDefinitions>
+                                    <TextBlock Text="SECURE NOTES" Foreground="{StaticResource NeonYellow}"/>
+                                    <TextBox x:Name="TxtNoteInput" Grid.Row="1" Style="{StaticResource CyberInput}" Margin="0,10" Height="60" TextWrapping="Wrap"/>
+                                    <Button Grid.Row="1" Content="SAVE" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="5" Background="#222" Foreground="White" Click="AddNote_Click"/>
+                                    <ListBox x:Name="NotesList" Grid.Row="2" Background="Transparent" BorderThickness="0" Foreground="White"/>
+                                </Grid>
+                            </Border>
+                        </Grid>
+
+                        <Grid x:Name="FirewallView" Visibility="Collapsed">
+                            <Border Style="{StaticResource InfoCard}" VerticalAlignment="Center" HorizontalAlignment="Center" Width="600" BorderBrush="{StaticResource NeonRed}">
+                                <StackPanel>
+                                    <TextBlock Text="FIREWALL MODULE" Foreground="{StaticResource NeonRed}" FontSize="20" FontWeight="Bold" Margin="0,0,0,20"/>
+                                    <CheckBox Content="Block ICMP Requests" Foreground="White" Margin="0,5"/>
+                                    <CheckBox Content="Block Incoming RDP" Foreground="White" Margin="0,5" IsChecked="True"/>
+                                    <Separator Background="#333" Margin="0,15"/>
+                                    <TextBlock Text="SCAN TARGET IP:" Foreground="Gray"/>
+                                    <TextBox x:Name="TxtTargetIp" Text="127.0.0.1" Style="{StaticResource CyberInput}"/>
+                                    <Button Content="START SCAN" Background="#333" Foreground="White" Padding="15" Margin="0,20" Click="StartScan_Click"/>
+                                    <ListBox x:Name="ScanResults" Height="200" Background="Black" Foreground="Lime" FontFamily="Consolas"/>
+
+                                    <Separator Background="#333" Margin="0,15"/>
+                                    <TextBlock Text="BLOCK IP:" Foreground="Gray"/>
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBox x:Name="TxtBlockIp" Width="200" Style="{StaticResource CyberInput}"/>
+                                        <Button Content="BLOCK" Background="{StaticResource NeonRed}" Foreground="White" Margin="10,0" Click="BlockIp_Click"/>
+                                    </StackPanel>
+                                    <ListBox x:Name="BlockedIpList" Height="100" Margin="0,10" Background="Black" Foreground="Red"/>
+                                </StackPanel>
+                            </Border>
+                        </Grid>
+
+                    </Grid>
+                </Grid>
+            </Grid>
+
+            <Grid x:Name="LoginOverlay" Background="Black" Visibility="Visible">
+                <Canvas x:Name="MatrixCanvas" Background="Black" IsHitTestVisible="False"/>
+                <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Width="500">
+                    <TextBlock Text="SYSTEM BIOS v13.0" Foreground="{StaticResource NeonBlue}" FontFamily="Consolas" Margin="0,0,0,20"/>
+
+                    <Border Height="200" BorderBrush="#333" BorderThickness="1" Background="#050505" Margin="0,0,0,30">
+                        <ListBox x:Name="BootLogList" Background="Transparent" BorderThickness="0" Foreground="{StaticResource NeonGreen}" FontFamily="Consolas" FontSize="12"/>
+                    </Border>
+
+                    <Border x:Name="AuthForm" BorderBrush="{StaticResource NeonGreen}" BorderThickness="1" Background="#111" CornerRadius="5" Padding="30" Visibility="Collapsed">
+                        <StackPanel>
+                            <TextBlock x:Name="AuthTitle" Text="IDENTITY VERIFICATION" Foreground="White" HorizontalAlignment="Center" Margin="0,0,0,20" FontSize="18"/>
+                            <TextBlock Text="USER:" Foreground="Gray"/>
+                            <TextBox x:Name="TxtUser" Style="{StaticResource CyberInput}" Text="admin"/>
+                            <TextBlock Text="KEY:" Foreground="Gray" Margin="0,10,0,0"/>
+                            <PasswordBox x:Name="TxtPass" Background="#111" Foreground="{StaticResource NeonGreen}" BorderBrush="#333" BorderThickness="1" Padding="8"/>
+                            <Button x:Name="BtnAuth" Content="ACCESS" Margin="0,20,0,0" Background="{StaticResource NeonGreen}" Foreground="Black" FontWeight="Bold" Height="40" Click="Auth_Click"/>
+                            <Button x:Name="BtnSwitch" Content="> REGISTER NEW AGENT" Background="Transparent" Foreground="Gray" BorderThickness="0" Margin="0,10,0,0" Click="SwitchAuth_Click" Cursor="Hand"/>
+                            <TextBlock x:Name="TxtAuthStatus" Text="WAITING..." Foreground="Gray" HorizontalAlignment="Center" Margin="0,15,0,0"/>
+                        </StackPanel>
+                    </Border>
+                </StackPanel>
+            </Grid>
+        </Grid>
+    </Border>
+</Window>
